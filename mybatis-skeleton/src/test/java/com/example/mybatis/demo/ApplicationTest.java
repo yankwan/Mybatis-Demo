@@ -2,6 +2,7 @@ package com.example.mybatis.demo;
 
 import com.example.mybatis.demo.mybatis.entity.User;
 import com.example.mybatis.demo.mybatis.mapper.UserMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class ApplicationTest {
 
     @Autowired
@@ -36,7 +40,7 @@ public class ApplicationTest {
         user.setName("Mike");
         user.setCreateDate(new Date());
         int i = userMapper.insert(user);
-        assertEquals(i, 1);
+        log.info("the new insert id is {}}", user.getId());
     }
 
     @Test
@@ -54,7 +58,28 @@ public class ApplicationTest {
         Date start = df.parse("2018-09-15 12:12:00");
         Date end = df.parse(df.format(new Date()));
         List<User> list = userMapper.selectByDatePeriod(start, end);
-        System.out.println("list size is : " + list.size());
+        log.info("list size is : {}", list.size());
     }
+
+
+    @Test
+    public void batchInsert() {
+        List<User> list = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            User user = new User();
+            user.setName("Batch-" + i);
+            user.setAge(20 + i);
+            user.setCreateDate(new Date());
+            list.add(user);
+        }
+
+        int i = userMapper.batchInsert(list);
+        assertEquals(5, i);
+        for (User user : list) {
+            assertNotNull(user.getId());
+            log.info("user id is : {}", user.getId());
+        }
+    }
+
 
 }

@@ -1,3 +1,8 @@
+#### Mybatis 参考文档
+
+* **[Mybatis](http://www.mybatis.org/mybatis-3/)**
+* **[MyBatis Generator](http://www.mybatis.org/generator/)**
+
 #### Mybatis 相关依赖
 ```xml
 <!--mybatis与spring boot集成-->
@@ -63,7 +68,7 @@ spring:
 
 
 #### Mybatis 日志
-这里使用logback对日志进行输出。
+这里使用logback对日志进行输出。logback详细使用参考 **[logback文档](https://logback.qos.ch/manual/index.html)**。
 
 * 首先引入日志相关依赖
 ```xml
@@ -118,3 +123,84 @@ spring:
 <context id="DB2Tables" targetRuntime="MyBatis3" defaultModelType="flat"></context>
 ```
 `<context>`标签中指定`defaultModelType`属性为`flat`，默认值为`conditional`。指定`flat`后每张表就只会生成一个实体类。
+
+
+#### Mybatis 操作
+
+1.selectKey标签设置
+
+在INSERT语句中，可以通过设置`selectKey`标签获取插入记录的ID值。主键字段必须设为自增类型。
+
+`<selectKey>`有个`order`属性
+* 设为`before`，`<selectKey>`置于insert语句前面，通过`SELECT seq_user.nextval AS id` 获取序列（mysql中要创建序列）。
+* 设为`after`，`<selectKey>`置于insert语句后面，通过`SELECT last_insert_id() AS id` 通过自增序列获取。
+
+```xml
+<insert id="insert" parameterType="com.example.mybatis.demo.mybatis.entity.User">
+    insert into user (name, age, create_date)
+    values (#{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP})
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+        SELECT LAST_INSERT_ID() AS ID
+    </selectKey>
+</insert>
+```
+
+```java
+int i = userMapper.insert(user);
+log.info("Affect rows is： {}", i);
+log.info("Insert Id is: {}", user.getId());
+```
+使用`selectKey`可以在调用插入接口后，通过`user.getId()`获取刚插入的主键。
+
+
+2.日期字段的作为查询条件。
+
+数据库中字段`create_time`字段类型为`TIMESTAMP`，对应的Java实体类中的字段为 `private Date createDate;`。
+
+mapper接口方法如下：
+```java
+public interface UserMapper {
+    List<User> selectByDatetime(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+}
+```
+传入参数为`Date`类型。注意：多个参数传入需用@Param注解指名参数名称。
+
+对应mapper.xml文件中的select语句写法如下：
+```xml
+<select id="selectByDatetime" parameterType="java.util.Date" resultMap="BaseResultMap">
+    SELECT *
+    FROM user
+    WHERE
+        create_date &gt; #{startDate, jdbcType=TIMESTAMP}
+    AND create_date &lt; #{endDate, jdbcType=TIMESTAMP}
+    ORDER BY create_date desc
+</select>
+```
+`parameterType`指明传入参数类型为`java.util.Date`。Java中的`Date`类型可以与Mysql中的`TIMESTAMP`类型相对应。
+
+注意：`Date()`函数获取的值必须经过格式化成`yyyy-MM-dd HH:mm:ss`， 与数据库存储的形式保持一致。
+
+
+3.批量插入操作。
+
+通过`<foreach>`标签实现批量插入。
+
+```xml
+<insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    insert into user(name, age, create_date)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+        (
+            #{item.name,jdbcType=VARCHAR},
+            #{item.age,jdbcType=INTEGER},
+            #{item.createDate,jdbcType=TIMESTAMP}
+        )
+    </foreach>
+</insert>
+```
+`<foreach>`中的`collection`属性：
+* List对象用 **`list`**
+* 数组对象用 **`array`**
+* Map对象用 **`map`**
+
+通过设置`useGeneratedKeys="true" keyProperty="id"`，插入成功后list上的所有对象的ID属性都会设置插入时对应的ID值。

@@ -23,4 +23,6 @@ public interface UserMapper {
      * custom mapper
      */
     List<User> selectByDatePeriod(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+    int batchInsert(List<User> users);
 }

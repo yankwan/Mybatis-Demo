@@ -25,14 +25,14 @@
 ```
 
 #### Mybatis 配置相关
-##### 1.配置mapper接口文件扫描路径。
+1.配置mapper接口文件扫描路径。
 ```java
 @SpringBootApplication
 @MapperScan(basePackages = "com.example.mybatis.demo.mybatis.mapper")
 ```
 在启动类中添加@MapperScan注解，若不配置@MapperScan注解，则必须在每个Mapper接口类中添加@Mapper注解。
 
-##### 2.application.yml中配置mybatis相关内容
+2.application.yml中配置mybatis相关内容
 ```xml
 mybatis:
     mapper-locations: classpath:mapper/*.xml
@@ -43,7 +43,7 @@ mybatis:
 
 * `type-aliases-package` 指定entity在哪个包中，避免同名class时找不到对应的bean。
 
-##### 3.数据源配置
+3.数据源配置
 ```xml
 spring:
     datasource:
@@ -53,7 +53,7 @@ spring:
         password:
 ```
 
-##### 4.运算符替换
+4.运算符替换
 避免运算符号如`<`、`>`与xml文件中的格式符混淆引起xml文件解析错误，用如下符号替换。
 
 | 原始符号 | 替换符号 | 
@@ -108,7 +108,7 @@ spring:
 
 #### Mybatis 逆向工程配置
 
-##### 1.不生成Example查询相关的内容，在`<table>`标签中添加以下内容。
+1.不生成Example查询相关的内容，在`<table>`标签中添加以下内容。
 
 ```xml
 <table tableName="%"
@@ -118,7 +118,7 @@ spring:
 </table>
 ```
 
-##### 2.每张表只生成一个实体类，避免Blob类型的字段单独生成一个实体类。
+2.每张表只生成一个实体类，避免Blob类型的字段单独生成一个实体类。
 ```xml
 <context id="DB2Tables" targetRuntime="MyBatis3" defaultModelType="flat"></context>
 ```
@@ -127,9 +127,7 @@ spring:
 
 #### Mybatis 操作
 
-代码样例参考单元测试样例。
-
-##### 1.selectKey标签设置
+1.selectKey标签设置
 
 在INSERT语句中，可以通过设置`selectKey`标签获取插入记录的ID值。主键字段必须设为自增类型。
 
@@ -155,7 +153,7 @@ log.info("Insert Id is: {}", user.getId());
 使用`selectKey`可以在调用插入接口后，通过`user.getId()`获取刚插入的主键。
 
 
-##### 2.日期字段的作为查询条件。
+2.日期字段的作为查询条件。
 
 数据库中字段`create_time`字段类型为`TIMESTAMP`，对应的Java实体类中的字段为 `private Date createDate;`。
 
@@ -183,7 +181,7 @@ public interface UserMapper {
 注意：`Date()`函数获取的值必须经过格式化成`yyyy-MM-dd HH:mm:ss`， 与数据库存储的形式保持一致。
 
 
-##### 3.批量插入操作。
+3.批量插入操作。
 
 通过`<foreach>`标签实现批量插入。
 

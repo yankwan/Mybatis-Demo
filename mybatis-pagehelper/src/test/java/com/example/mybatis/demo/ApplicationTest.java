@@ -2,6 +2,8 @@ package com.example.mybatis.demo;
 
 import com.example.mybatis.demo.mybatis.entity.User;
 import com.example.mybatis.demo.mybatis.mapper.UserMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,58 +30,25 @@ public class ApplicationTest {
     private UserMapper userMapper;
 
     @Test
-    public void selectByUserId() {
-        User user = userMapper.selectByPrimaryKey(1L);
-        assertEquals(user.getName(), "Bob");
+    public void selectUsers1() {
+        PageHelper.startPage(1, 3);
+        List<User> list = userMapper.selectUsers();
+        assertEquals(3, list.size());
+
+        // 获取分页信息
+        PageInfo<User> pageInfo = new PageInfo<User>(list);
+        log.info("The total is : {}", pageInfo.getTotal());
+        log.info("The page size is : {}", pageInfo.getPageSize());
+        log.info("The page num is :{}", pageInfo.getPageNum());
     }
 
     @Test
-    public void insertNewUser() {
-        User user = new User();
-        user.setAge(18);
-        user.setName("Mike");
-        user.setCreateDate(new Date());
-        int i = userMapper.insert(user);
-        log.info("the new insert id is {}}", user.getId());
+    public void selectUsers2() {
+        PageHelper.startPage(1, 3);
+        List<User> list = userMapper.selectUsers();
+        assertEquals(3, list.size());
     }
 
-    @Test
-    public void updateUserByUserId() {
-        User user = new User();
-        user.setId(1L);
-        user.setAge(30);
-        int i = userMapper.updateByPrimaryKeySelective(user);
-        assertEquals(i, 1);
-    }
-
-    @Test
-    public void selectByDate() throws ParseException {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date start = df.parse("2018-09-15 12:12:00");
-        Date end = df.parse(df.format(new Date()));
-        List<User> list = userMapper.selectByDatePeriod(start, end);
-        log.info("list size is : {}", list.size());
-    }
-
-
-    @Test
-    public void batchInsert() {
-        List<User> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            User user = new User();
-            user.setName("Batch-" + i);
-            user.setAge(20 + i);
-            user.setCreateDate(new Date());
-            list.add(user);
-        }
-
-        int i = userMapper.batchInsert(list);
-        assertEquals(5, i);
-        for (User user : list) {
-            assertNotNull(user.getId());
-            log.info("user id is : {}", user.getId());
-        }
-    }
 
 
 }

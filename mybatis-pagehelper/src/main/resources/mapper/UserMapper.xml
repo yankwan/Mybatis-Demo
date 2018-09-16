@@ -19,6 +19,12 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
 
+    <select id="selectUsers" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user
+    </select>
+
     <select id="selectByDatePeriod" parameterType="java.util.Date" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />

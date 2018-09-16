@@ -2,6 +2,7 @@ package com.example.mybatis.demo.mybatis.mapper;
 
 import com.example.mybatis.demo.mybatis.entity.User;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.RowBounds;
 
 import java.util.Date;
 import java.util.List;
@@ -25,4 +26,8 @@ public interface UserMapper {
     List<User> selectByDatePeriod(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     int batchInsert(List<User> users);
+
+    List<User> selectUsers();
+
+    List<User> selectUsersRowBounds(RowBounds rowBounds);
 }

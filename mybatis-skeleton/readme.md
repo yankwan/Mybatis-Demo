@@ -1,3 +1,24 @@
+#### Mybatis 相关依赖
+```xml
+<!--mybatis与spring boot集成-->
+<dependency>
+    <groupId>org.mybatis.spring.boot</groupId>
+    <artifactId>mybatis-spring-boot-starter</artifactId>
+    <version>1.3.2</version>
+</dependency>
+<!--mysql数据库驱动-->
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+</dependency>
+<!--mybatis逆向工程-->
+<dependency>
+    <groupId>org.mybatis.generator</groupId>
+    <artifactId>mybatis-generator-core</artifactId>
+    <version>1.3.5</version>
+</dependency>
+```
+
 #### Mybatis 配置相关
 1.配置mapper接口文件扫描路径。
 ```java
@@ -42,7 +63,43 @@ spring:
 
 
 #### Mybatis 日志
+这里使用logback对日志进行输出。
 
+* 首先引入日志相关依赖
+```xml
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.2.3</version>
+</dependency>
+```
+
+* 配置logback.xml文件
+```xml
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!--定义彩色输出格式-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %green(%logger) | %msg%n"/>
+
+    <!--定义appender：输出到控制台-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- mybatis loggers 输出级别设为DEBUG -->
+    <logger name="com.example.mybatis.demo.mybatis.mapper" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
+```
 
 #### Mybatis 逆向工程配置
 

@@ -35,6 +35,15 @@
         order by create_date desc
     </select>
 
+    <select id="selectByMoreParams" parameterType="hashmap" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from  user
+        where age = #{age}
+        and create_date &gt; #{startDate}
+        and create_date &lt; #{endDate}
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from user
         where id = #{id,jdbcType=BIGINT}

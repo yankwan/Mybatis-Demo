@@ -208,3 +208,36 @@ public interface UserMapper {
 * Map对象用 **`map`**
 
 通过设置`useGeneratedKeys="true" keyProperty="id"`，插入成功后list上的所有对象的ID属性都会设置插入时对应的ID值。
+
+
+##### 4. 多参数查询
+
+查询条件有多个参数的情况，可以使用Map集合保存参数。
+
+```java
+List<User> selectByMoreParams(Map map);
+```
+
+```xml
+<select id="selectByMoreParams" parameterType="hashmap" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from  user
+    where age = #{age}
+    and create_date &gt; #{startDate}
+    and create_date &lt; #{endDate}
+</select>
+```
+`#{}`里面的变量就是map集合对应的键值。单元测试如下：
+
+```java
+@Test
+public void selectByMoreParams() {
+    Map map = new HashMap<>();
+    map.put("age", 18);
+    map.put("startDate", "2018-09-15 22:34:02");
+    map.put("endDate", "2018-09-16 22:34:02");
+    List<User> result = userMapper.selectByMoreParams(map);
+    log.info("user list size is : {}", result.size());
+}
+```

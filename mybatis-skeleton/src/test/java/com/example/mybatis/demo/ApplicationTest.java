@@ -12,9 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,7 +22,7 @@ import static org.junit.Assert.assertNotNull;
 @Slf4j
 public class ApplicationTest {
 
-    @Autowired
+    @Autowired(required = false)
     private UserMapper userMapper;
 
     @Test
@@ -79,6 +77,16 @@ public class ApplicationTest {
             assertNotNull(user.getId());
             log.info("user id is : {}", user.getId());
         }
+    }
+
+    @Test
+    public void selectByMoreParams() {
+        Map map = new HashMap<>();
+        map.put("age", 18);
+        map.put("startDate", "2018-09-15 22:34:02");
+        map.put("endDate", "2018-09-16 22:34:02");
+        List<User> result = userMapper.selectByMoreParams(map);
+        log.info("user list size is : {}", result.size());
     }
 
 

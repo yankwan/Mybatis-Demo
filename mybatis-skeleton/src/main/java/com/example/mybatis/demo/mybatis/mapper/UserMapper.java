@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface UserMapper {
     int deleteByPrimaryKey(Long id);
@@ -25,4 +26,6 @@ public interface UserMapper {
     List<User> selectByDatePeriod(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     int batchInsert(List<User> users);
+
+    List<User> selectByMoreParams(Map map);
 }
